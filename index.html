@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tournée Factrice</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 1rem;
+      background: #f8f9fa;
+    }
+    h1, h2 {
+      text-align: center;
+    }
+    .section {
+      margin-bottom: 2rem;
+    }
+    .checkbox-list label {
+      display: block;
+      background: white;
+      padding: 0.75rem;
+      margin: 0.25rem 0;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    button {
+      width: 100%;
+      padding: 1rem;
+      font-size: 1rem;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .task {
+      background: white;
+      margin: 0.5rem 0;
+      padding: 1rem;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <h1>Préparer la tournée</h1>
+
+  <div class="section" id="setup">
+    <h2>Sélection des arrêts</h2>
+    <form id="form">
+      <div class="checkbox-list">
+        <label><input type="checkbox" name="1 rue des Lilas" /> 1 rue des Lilas</label>
+        <label><input type="checkbox" name="5 rue des Lilas" /> 5 rue des Lilas</label>
+        <label><input type="checkbox" name="8 rue de la Gare" /> 8 rue de la Gare</label>
+        <label><input type="checkbox" name="12 rue de la Gare" /> 12 rue de la Gare</label>
+        <label><input type="checkbox" name="3 avenue du Parc" /> 3 avenue du Parc</label>
+      </div>
+      <button type="submit">Commencer la tournée</button>
+    </form>
+  </div>
+
+  <div class="section hidden" id="tour">
+    <h2>Tournée en cours</h2>
+    <div id="taskList"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById("form");
+    const setup = document.getElementById("setup");
+    const tour = document.getElementById("tour");
+    const taskList = document.getElementById("taskList");
+
+    // Sauvegarde/restauration de l'état
+    const saveState = (tasks) => localStorage.setItem("tournee", JSON.stringify(tasks));
+    const loadState = () => JSON.parse(localStorage.getItem("tournee") || "[]");
+
+    const startTour = (tasks) => {
+      taskList.innerHTML = "";
+      tasks.forEach((task, i) => {
+        const div = document.createElement("div");
+        div.className = "task";
+        div.innerHTML = `
+          <span>${task}</span>
+          <button onclick="finishTask(${i})">Fait</button>
+        `;
+        taskList.appendChild(div);
+      });
+      setup.classList.add("hidden");
+      tour.classList.remove("hidden");
+    };
+
+    const finishTask = (index) => {
+      const tasks = loadState();
+      tasks.splice(index, 1);
+      saveState(tasks);
+      startTour(tasks);
+    };
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const tasks = Array.from(form.elements)
+        .filter(el => el.type === "checkbox" && el.checked)
+        .map(el => el.name);
+      saveState(tasks);
+      startTour(tasks);
+    });
+
+    // Recharger l'état si déjà lancé
+    const saved = loadState();
+    if (saved.length > 0) {
+      startTour(saved);
+    }
+  </script>
+</body>
+</html>
