@@ -31,7 +31,8 @@ def parse_input(data):
             for num in numeros:
                 adresse = {
                     "numero": num,
-                    "colis": 0,
+                    "colis_petit": 0,
+                    "colis_gros":0,
                     "reco_suivi": 0,
                     "courier": False,
                     "pub": False
@@ -62,7 +63,7 @@ def main():
 
     # Écrire le fichier JS
     with open("rues_tournee.js", "w", encoding="utf-8") as f:
-        f.write("const tournee = ")
+        f.write("const tourneeData = ")
         json.dump(resultat, f, indent=2, ensure_ascii=False)
         f.write(";\n")
 

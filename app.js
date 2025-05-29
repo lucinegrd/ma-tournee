@@ -9,9 +9,9 @@ const loadTournee = () => {
     tourneeData.forEach(village => {
         village.rues.forEach(rue => {
             rue.adresses.forEach(addr => {
-                if (addr.fait === undefined) {
-                addr.fait = false;
-                }
+                addr.colis_petit = addr.colis_petit || 0;
+                addr.colis_gros = addr.colis_gros || 0;
+                addr.fait = addr.fait || false;
             });
         });
     });
@@ -20,6 +20,10 @@ const loadTournee = () => {
 };
 
 let tournee = loadTournee();
+let popupVillage = null;
+let popupRue = null;
+let popupNumero = null;
+
 
 const saveData = () => {
     localStorage.setItem('tournee', JSON.stringify(tournee));
@@ -30,7 +34,7 @@ const resetAvancement = () => {
     window.location.reload();
 };
 
-const updateAddress = (nom_village, rue, numero, type) => {
+const updateAddress = (nom_village, rue, numero, type, colisSize = null) => {
     const village = tournee.find(v => v.nom_village === nom_village);
     if (!village) {
         console.warn(`Village non trouvé : ${nom_village}`);
@@ -40,15 +44,25 @@ const updateAddress = (nom_village, rue, numero, type) => {
     let updated = false;
     for (const rueData of village.rues) {
         if (rueData.nom_rue === rue) {
-        const addr = rueData.adresses.find(a => a.numero === numero);
-        if (addr) {
-            if (type === 'colis') addr.colis++;
-            if (type === 'reco') addr.reco_suivi++;
-            if (type === 'courrier') addr.courier = true;
-            if (type === 'pub') addr.pub = true;
-            updated = true;
-            break;
-        }
+            const addr = rueData.adresses.find(a => a.numero === numero);
+            if (addr) {
+                if (type === 'colis') {
+                    if (colisSize === 'petit') {
+                        addr.colis_petit = (addr.colis_petit || 0) + 1;
+                    } else if (colisSize === 'gros') {
+                        addr.colis_gros = (addr.colis_gros || 0) + 1;
+                    } else {
+                        // fallback pour compatibilité si pas précisé
+                        addr.colis_petit = (addr.colis_petit || 0) + 1;
+                    }
+                }
+                if (type === 'reco') addr.reco_suivi++;
+                if (type === 'courrier') addr.courier = true;
+                if (type === 'pub') addr.pub = true;
+
+                updated = true;
+                break;
+            }
         }
     }
 
@@ -58,6 +72,7 @@ const updateAddress = (nom_village, rue, numero, type) => {
 
     saveData();
 };
+
 
 
 const showPage = (page) => {
@@ -110,6 +125,8 @@ const makeList = (type, containerId) => {
             buttonsDiv.className = 'number-buttons';
 
             numeros.forEach(num => {
+                
+
                 const btn = document.createElement('button');
                 btn.textContent = num;
 
@@ -119,10 +136,17 @@ const makeList = (type, containerId) => {
                 btn.setAttribute('data-numero', num);
                 btn.setAttribute('data-type', type);
 
-                btn.onclick = () => {
-                    updateAddress(nom_village, rue, num, type);
-                    btn.classList.add('selected');
-                };
+                if (type === 'colis') {
+                    btn.onclick = () => {
+                        ouvrirPopupColis(nom_village, rue, num);
+                    }
+                } else {
+                    btn.onclick = () => {
+                        updateAddress(nom_village, rue, num, type);
+                        btn.classList.add('selected');
+                    };
+                }
+                
 
                 const village = tournee.find(v => v.nom_village === nom_village);
                 if (village) {
@@ -131,7 +155,7 @@ const makeList = (type, containerId) => {
                             const addr = rueData.adresses.find(a => a.numero === num);
                             if (addr) {
                                 if (
-                                    (type === 'colis' && addr.colis > 0) ||
+                                    (type === 'colis' && ((addr.colis_petit || 0) > 0 || (addr.colis_gros || 0) > 0)) ||
                                     (type === 'reco' && addr.reco_suivi > 0) ||
                                     (type === 'courrier' && addr.courier === true)
                                 ) {
@@ -141,7 +165,6 @@ const makeList = (type, containerId) => {
                         }
                     }
                 }
-
                 buttonsDiv.appendChild(btn);
             });
 
@@ -176,7 +199,6 @@ const launchTournee = () => {
     let currentVillageName = null;
 
     tournee.forEach(village => {
-        // Si nouveau village, afficher un titre
         if (village.nom_village !== currentVillageName) {
             currentVillageName = village.nom_village;
             const villageTitle = document.createElement('h3');
@@ -186,9 +208,11 @@ const launchTournee = () => {
 
         village.rues.forEach(rue => {
             rue.adresses.forEach(addr => {
-                if (addr.colis || addr.reco_suivi || addr.courier) {
+                const hasColis = (addr.colis_petit || 0) > 0 || (addr.colis_gros || 0) > 0;
+                if (hasColis || addr.reco_suivi || addr.courier) {
                     let icons = '';
-                    if (addr.colis) icons += '📦'.repeat(addr.colis);
+                    icons += '📦'.repeat(addr.colis_gros || 0);
+                    icons += '(📦)'.repeat(addr.colis_petit || 0);
                     if (addr.reco_suivi) icons += '📬'.repeat(addr.reco_suivi);
                     if (addr.courier) icons += '✉️';
 
@@ -202,6 +226,7 @@ const launchTournee = () => {
 
     showPage('tournee');
 };
+
 
 
 const addTask = (container, label, nomVillage, nomRue, numeroText, isDone) => {
@@ -272,3 +297,131 @@ const addTask = (container, label, nomVillage, nomRue, numeroText, isDone) => {
 };
 
 const makeAddressKey = (village, rue, numero) => `${village}|${rue}|${numero}`;
+
+
+const ouvrirPopupColis = (village, rue, numero) => {
+    popupVillage = village;
+    popupRue = rue;
+    popupNumero = numero;
+    console.log(village, rue, numero)
+
+    const popup = document.getElementById('colisPopup');
+    const titre = document.getElementById('popupAdresseTitre');
+    const liste = document.getElementById('popupColisListe');
+
+    titre.textContent = `${numero} ${rue}, ${village}`;
+    liste.innerHTML = '';
+
+    const villageData = tournee.find(v => v.nom_village === village);
+    if (!villageData) return;
+
+    let addr = null;
+
+    for (const rueData of villageData.rues) {
+        if (rueData.nom_rue === rue) {
+            const found = rueData.adresses.find(a => a.numero.trim().toUpperCase() === numero.trim().toUpperCase());
+            if (found) {
+                addr = found;
+                break; // on sort dès qu’on trouve la bonne adresse
+            }
+        }
+    }
+
+    if (!addr) {
+        console.warn(`❌ Adresse introuvable dans ouvrirPopupColis : ${numero} ${rue} (${village})`);
+        return;
+    }
+
+
+    const addItem = (type, label) => {
+        const count = addr[`colis_${type}`] || 0;
+        for (let i = 0; i < count; i++) {
+        const li = document.createElement('li');
+        li.textContent = label;
+
+        const btn = document.createElement('button');
+        btn.textContent = '❌';
+        btn.style.marginLeft = '10px';
+        btn.onclick = () => {
+            addr[`colis_${type}`]--;
+
+            // Vérifie si aucun colis n'est présent
+            const totalPetit = addr.colis_petit || 0;
+            const totalGros = addr.colis_gros || 0;
+
+            // Sélectionne le bouton d’adresse (si présent)
+            const selector = `button[data-village="${village}"][data-rue="${rue}"][data-numero="${numero}"][data-type="colis"]`;
+            const boutonAdresse = document.querySelector(selector);
+
+            if (boutonAdresse) {
+                if (totalPetit === 0 && totalGros === 0) {
+                    boutonAdresse.classList.remove('selected');
+                } else {
+                    boutonAdresse.classList.add('selected');
+                }
+            }
+
+
+            saveData();
+            ouvrirPopupColis(village, rue, numero); // refresh l'affichage
+        };
+
+        li.appendChild(btn);
+        liste.appendChild(li);
+        }
+    };
+
+    addItem('petit', '📦 Petit');
+    addItem('gros', '📦 Gros');
+
+    popup.classList.remove('hidden');
+};
+
+const ajouterColis = (type) => {
+    const village = tournee.find(v => v.nom_village === popupVillage);
+    if (!village) return;
+
+    const numeroClean = popupNumero.trim().toUpperCase();
+    const rueNom = popupRue;
+
+    for (const rueData of village.rues) {
+        if (rueData.nom_rue === rueNom) {
+            const addr = rueData.adresses.find(a => a.numero.trim().toUpperCase() === numeroClean);
+            if (addr) {
+                addr[`colis_${type}`] = (addr[`colis_${type}`] || 0) + 1;
+                saveData();
+
+                const selector = `button[data-village="${popupVillage}"][data-rue="${popupRue}"][data-numero="${popupNumero}"][data-type="colis"]`;
+                const boutonAdresse = document.querySelector(selector);
+                if (boutonAdresse) boutonAdresse.classList.add('selected');
+
+                ouvrirPopupColis(popupVillage, popupRue, popupNumero);
+                return;
+            }
+        }
+    }
+
+    console.warn(`❌ Adresse introuvable : ${popupNumero} ${popupRue} (${popupVillage})`);
+};
+
+
+
+const fermerPopup = () => {
+    document.getElementById('colisPopup').classList.add('hidden');
+};
+
+const findAdresse = (villageNom, rueNom, numero) => {
+    const village = tournee.find(v => v.nom_village === villageNom);
+    if (!village) return null;
+
+    const numeroClean = numero.trim().toUpperCase();
+
+    for (const rue of village.rues) {
+        if (rue.nom_rue === rueNom) {
+            const addr = rue.adresses.find(a => a.numero.trim().toUpperCase() === numeroClean);
+            if (addr) return { rue, addr };
+        }
+    }
+
+    return null;
+};

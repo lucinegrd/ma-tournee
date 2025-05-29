@@ -9,10 +9,11 @@
 <body>
   <div id="home">
     <h1>Tournée Factrice</h1>
-    <button class="button secondary" onclick="showPage('colis')">Enregistrer Colis</button>
-    <button class="button secondary" onclick="showPage('reco')">Enregistrer Recommandés/suivis</button>
-    <button class="button secondary" onclick="showPage('courrier')">Enregistrer Courrier</button>
+    <button class="button secondary" onclick="showPage('colis')">📦 Colis</button>
+    <button class="button secondary" onclick="showPage('reco')">📬 Recommandés/Suivis</button>
+    <button class="button secondary" onclick="showPage('courrier')">✉️ Courrier</button>
     <button class="button primary" onclick="launchTournee()">Lancer tournée</button>
+    <button class="button secondary reset" onclick="resetAvancement()">Réinitialiser tournée</button>
   </div>
 
   <div id="colis" class="hidden">
@@ -42,8 +43,20 @@
     <h2>Tournée en cours</h2>
     <div id="tourneeList"></div>
     <button class="button back" onclick="goHome()">Retour</button>
-    <button class="button secondary" onclick="resetAvancement()">Réinitialiser tournée</button>
   </div>
+
+  <div id="colisPopup" class="hidden popup">
+    <div class="popup-content">
+        <h3 id="popupAdresseTitre"></h3>
+        <ul id="popupColisListe"></ul>
+        <div class="popup-actions">
+        <button onclick="ajouterColis('petit')">Ajouter petit</button>
+        <button onclick="ajouterColis('gros')">Ajouter gros</button>
+        <button onclick="fermerPopup()">Fermer</button>
+        </div>
+    </div>
+    </div>
+
   <script src="adresses/rues_tournee.js"></script>
   <script src="adresses/rues_triee.js"></script>
   <script src="app.js"></script>
