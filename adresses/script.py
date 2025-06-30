@@ -22,26 +22,14 @@ def parse_input(data):
                 })
             village_courant = ligne[:-1].strip()
             rues_courantes = []
-        elif ':' in ligne:
-            nom_rue, numeros_str = ligne.split(':', 1)
-            nom_rue = nom_rue.strip()
-            numeros = [num.strip() for num in numeros_str.split(',')]
-
-            adresses = []
-            for num in numeros:
-                adresse = {
-                    "numero": num,
-                    "colis_petit": 0,
-                    "colis_gros":0,
-                    "reco_suivi": 0,
-                    "courier": False,
-                    "pub": False
-                }
-                adresses.append(adresse)
+        elif ';' in ligne:
+            nom_rue = ligne[:-1]
 
             rues_courantes.append({
                 "nom_rue": nom_rue,
-                "adresses": adresses
+                "colis": [],
+                "depot": False,
+                "bal": False
             })
 
     # Ajouter le dernier village

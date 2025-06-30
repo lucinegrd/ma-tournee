@@ -72,18 +72,18 @@ h3 {
   color: white;
 }
 
-.task {
-  display: flex;
+.num-btn {
   justify-content: space-between;
   align-items: center;
   background: #f9f9f9;
   border: 1px solid #ddd;
   padding: 8px;
   margin-bottom: 6px;
+  margin-right: 6px;
   border-radius: 6px;
 }
 
-.task.done {
+.done {
   background-color: #e0e0e0;
   opacity: 0.8;
 }
@@ -96,15 +96,6 @@ h3 {
   cursor: pointer;
 }
 
-.done-button.to-do {
-  background-color: #dc3545;  
-  color: white;
-}
-
-.done-button.is-done {
-  background-color: #28a745; 
-  color: white;
-}
 
 .task-content {
   display: flex;

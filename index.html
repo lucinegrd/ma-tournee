@@ -10,8 +10,8 @@
   <div id="home">
     <h1>Tournée Factrice</h1>
     <button class="button secondary" onclick="showPage('colis')">📦 Colis</button>
-    <button class="button secondary" onclick="showPage('reco')">📬 Recommandés/Suivis</button>
-    <button class="button secondary" onclick="showPage('courrier')">✉️ Courrier</button>
+    <button class="button secondary" onclick="showPage('depot')">📥 Dépots</button>
+    <button class="button secondary" onclick="showPage('bal')">📮 Colis BAL</button>
     <button class="button primary" onclick="launchTournee()">Lancer tournée</button>
     <button class="button secondary reset" onclick="resetAvancement()">Réinitialiser tournée</button>
   </div>
@@ -23,18 +23,17 @@
     <button class="button back" onclick="goHome()">Retour</button>
   </div>
 
-  <div id="reco" class="hidden">
-    <h2>Recommandés / Suivis</h2>
+  <div id="depot" class="hidden">
+    <h2>Dépots</h2>
     <button class="button back" onclick="goHome()">Retour</button>
-    <div id="recoList"></div>
+    <div id="depotList"></div>
     <button class="button back" onclick="goHome()">Retour</button>
   </div>
 
-  <div id="courrier" class="hidden">
-    <h2>Courrier</h2>
+  <div id="bal" class="hidden">
+    <h2>Colis BAL</h2>
     <button class="button back" onclick="goHome()">Retour</button>
-    <button class="button secondary" onclick="selectAll('courrier')">Tout sélectionner</button>
-    <div id="courrierList"></div>
+    <div id="balList"></div>
     <button class="button back" onclick="goHome()">Retour</button>
   </div>
 
@@ -45,20 +44,8 @@
     <button class="button back" onclick="goHome()">Retour</button>
   </div>
 
-  <div id="colisPopup" class="hidden popup">
-    <div class="popup-content">
-        <h3 id="popupAdresseTitre"></h3>
-        <ul id="popupColisListe"></ul>
-        <div class="popup-actions">
-        <button onclick="ajouterColis('petit')">Ajouter petit</button>
-        <button onclick="ajouterColis('gros')">Ajouter gros</button>
-        <button onclick="fermerPopup()">Fermer</button>
-        </div>
-    </div>
-    </div>
 
   <script src="adresses/rues_tournee.js"></script>
-  <script src="adresses/rues_triee.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
