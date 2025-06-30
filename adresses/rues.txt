@@ -1,3 +1,32 @@
 LONGLAVILLE :
-route de Pierrepont;
-rue du 151e Régiment;
+avenue du Luxembourg;
+avenue de Longwy;
+place du 24 Juillet;
+rue Jeanne D'arc;
+rue des victimes du Nazisme;
+rue du Moulin;
+rue des Fondettes;
+rue du 8 Mai 45;
+rue René Getti;
+rue San Giovanni;
+rue Jean Jaures;
+rue du 11 Novembre;
+rue des Fleurs;
+rue Pablo Picasso;
+rue du 19 Mars;
+rue René Picard;
+avenue Bogdan Politanski;
+rue René Blenny;
+rue Sainte Barbe;
+rue du Pasteur;
+rue du Luminar;
+rue Saint Nicolas;
+rue Saint Laurent;
+rue de la Prairie;
+rue de la Cokerie;
+rue Edouard Dreux;
+rue Alfred Mézières;
+
+HERSERANGE : 
+rue de l'Aviation;
+Avenue du Luxembourg;

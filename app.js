@@ -177,66 +177,70 @@ const launchTournee = () => {
     tourneeList.appendChild(h3);
 
     /* ----- Rues ----- */
-    village.rues.forEach(rue => {
-      // Ligne titre rue + icônes
-      const rueHeader = document.createElement('div');
-      rueHeader.className = 'rue-header';
-      rueHeader.innerHTML = `
-        <strong>${rue.nom_rue}</strong>
-      `;
-      tourneeList.appendChild(rueHeader);
+   village.rues.forEach(rue => {
+  // Si rien à afficher, on saute
+  const hasColis = rue.colis && rue.colis.length > 0;
+  const hasDepot = rue.depot === true;
+  const hasBal = rue.bal === true;
 
-    // Conteneur horizontal des numéros + boutons emoji
-    const numsDiv = document.createElement('div');
-    numsDiv.className = 'nums-row';
+  if (!hasColis && !hasDepot && !hasBal) return;
 
-    // Définir le bouton pour 📥 Dépôt
-    if (rue.depot) {
-        const btnDepot = document.createElement('button');
-        btnDepot.textContent = '📥';
-        btnDepot.className = 'num-btn';
-        btnDepot.onclick = () => {
-            btnDepot.classList.toggle('done', rue.depot);
-        };
-        numsDiv.appendChild(btnDepot);
-    }
+  // Ligne titre rue + icônes
+  const rueHeader = document.createElement('div');
+  rueHeader.className = 'rue-header';
+  rueHeader.innerHTML = `<strong>${rue.nom_rue}</strong>`;
+  tourneeList.appendChild(rueHeader);
 
-    // Définir le bouton pour 📮 BAL
-    if (rue.bal) {
-        const btnBal = document.createElement('button');
-        btnBal.textContent = '📮';
-        btnBal.className = 'num-btn';
-        btnBal.onclick = () => {
-            btnBal.classList.toggle('done', rue.bal);
-        };
-        numsDiv.appendChild(btnBal);
-    }
+  const numsDiv = document.createElement('div');
+  numsDiv.className = 'nums-row';
 
-    // Boutons pour les numéros
+  if (hasDepot) {
+    const btnDepot = document.createElement('button');
+    btnDepot.textContent = '📥';
+    btnDepot.className = 'num-btn';
+    btnDepot.onclick = () => {
+      btnDepot.classList.toggle('done');
+    };
+    numsDiv.appendChild(btnDepot);
+  }
+
+  if (hasBal) {
+    const btnBal = document.createElement('button');
+    btnBal.textContent = '📮';
+    btnBal.className = 'num-btn';
+    btnBal.onclick = () => {
+      btnBal.classList.toggle('done');
+    };
+    numsDiv.appendChild(btnBal);
+  }
+
+  if (hasColis) {
     rue.colis.sort((a, b) => a - b).forEach(num => {
-        const btn = document.createElement('button');
-        btn.textContent = num;
-        btn.className = 'num-btn';
+      const btn = document.createElement('button');
+      btn.textContent = num;
+      btn.className = 'num-btn';
 
-        rue.done = rue.done || [];
-        if (rue.done.includes(num)) btn.classList.add('done');
+      rue.done = rue.done || [];
+      if (rue.done.includes(num)) btn.classList.add('done');
 
-        btn.onclick = () => {
-            if (!rue.done.includes(num)) {
-                rue.done.push(num);
-                btn.classList.add('done');
-            } else {
-                rue.done = rue.done.filter(n => n !== num);
-                btn.classList.remove('done');
-            }
-            saveData();
-        };
+      btn.onclick = () => {
+        if (!rue.done.includes(num)) {
+          rue.done.push(num);
+          btn.classList.add('done');
+        } else {
+          rue.done = rue.done.filter(n => n !== num);
+          btn.classList.remove('done');
+        }
+        saveData();
+      };
 
-        numsDiv.appendChild(btn);
+      numsDiv.appendChild(btn);
     });
+  }
 
-      tourneeList.appendChild(numsDiv);
-    });
+  tourneeList.appendChild(numsDiv);
+});
+
   });
 
   showPage('tournee');
@@ -284,3 +288,46 @@ const ouvrirClavier = (nomVillage, nomRue) => {
     popup.classList.remove('hidden');
     document.getElementById('numeroInput').focus();
 };
+
+
+function ajouterRue() {
+    const village = prompt("Nom du village :")?.trim();
+    const rue = prompt("Nom de la rue à ajouter :")?.trim();
+
+    if (!village || !rue) {
+        alert("Saisie invalide.");
+        return;
+    }
+
+    // Cherche le village existant
+    let villageData = tournee.find(v => v.nom_village === village);
+
+    if (!villageData) {
+        // Crée le village s'il n'existe pas
+        villageData = {
+            nom_village: village,
+            rues: []
+        };
+        tournee.push(villageData);
+    }
+
+    // Vérifie si la rue existe déjà
+    const existe = villageData.rues.some(r => r.nom_rue === rue);
+    if (existe) {
+        alert("Cette rue existe déjà dans ce village.");
+        return;
+    }
+
+    // Ajoute la rue vide
+    villageData.rues.push({
+        nom_rue: rue,
+        colis: [],
+        done: [],
+        depot: false,
+        bal: false
+    });
+
+    saveData();
+    alert(`Rue ajoutée à ${village} : ${rue}`);
+    showPage('colis'); // recharge la page active si tu veux mettre à jour l'affichage
+}

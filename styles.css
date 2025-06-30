@@ -26,8 +26,36 @@ h3 {
 
 .rues-container {
   padding: 10px;
-  background-color: #f2f2f2;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
 }
+
+.rue-btn {
+    display: inline-block;
+    margin: 4px;
+    padding: 5px 10px;
+    font-size: 1rem;
+    font-weight: 500;
+    background-color: #f0f0f0;
+    border: 2px solid #ccc;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.rue-btn:hover {
+    background-color: #e0e0e0;
+    border-color: #999;
+}
+
+.rue-btn.selected {
+    background-color: #4CAF50;
+    color: white;
+    border-color: #388E3C;
+}
+
+
 .button {
   width: 100%;
   padding: 1rem;
@@ -117,6 +145,7 @@ h3 {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 
 .reset {
   margin-top: 300px;
