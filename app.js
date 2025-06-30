@@ -113,7 +113,8 @@ const makeList = (type, containerId) => {
         villageDiv.appendChild(villageTitle);
         villageDiv.appendChild(ruesContainer);
 
-        village.rues.forEach(rue => {
+        village.rues.forEach(r => {
+            let rue = r;
             const btn = document.createElement('button');
             btn.className = 'rue-btn';
             btn.textContent = rue.nom_rue;
@@ -257,7 +258,7 @@ const ouvrirClavier = (nomVillage, nomRue) => {
         popup.innerHTML = `
             <div class="popup-content">
                 <h3 id="popupTitle">Ajouter un numéro</h3>
-                <input type="number" id="numeroInput" placeholder="Numéro de rue" />
+                <input type="tel" inputmode="numeric" pattern="[0-9]*" id="numeroInput" placeholder="Numéro de rue" />
                 <div class="popup-buttons">
                     <button id="validerNumero">Valider</button>
                     <button id="fermerPopup">Annuler</button>
