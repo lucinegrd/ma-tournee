@@ -113,29 +113,43 @@ const makeList = (type, containerId) => {
         villageDiv.appendChild(villageTitle);
         villageDiv.appendChild(ruesContainer);
 
-        village.rues.forEach(r => {
-            let rue = r;
-            const btn = document.createElement('button');
+        village.rues.forEach(rue => {
+            // Colis : afficher nombre et ouvrir clavier
+            if (type === 'colis') {
+                const rueHeader = document.createElement('div');
+                rueHeader.innerHTML = `
+        <strong>${rue.nom_rue}</strong>
+`;
+                const nbColis = Array.isArray(rue.colis) ? rue.colis.length : 0;
+                if (nbColis > 0) {
+                    rueHeader.classList.add('selected');
+                    rueHeader.textContent += ` (${nbColis})`;
+                }
+                const new_colis = document.createElement('div');
+                new_colis.innerHTML = `<input type="tel" inputmode="numeric" pattern="[0-9]*" id="numeroInput" placeholder="Numéro de rue" />
+                <div class="popup-buttons">
+                    <button id="validerNumero">Valider</button>
+                </div>`;
+                document.getElementById('validerNumero').onclick = () => {
+                    const num = document.getElementById('numeroInput').value.trim();
+                    if (num !== '') {
+                        updateAddress(village.nom_village, rue.nom_rue, num, 1);  // type 1 = colis
+                        popup.classList.add('hidden');
+                        document.getElementById('numeroInput').value = '';
+                        showPage('colis');  // Recharge la page pour affichage
+                    }
+                };
+                
+            }
+
+            // Dépôt ou BAL : toggle true/false
+            else if (type === 'depot' || type === 'bal') {
+                const btn = document.createElement('button');
             btn.className = 'rue-btn';
             btn.textContent = rue.nom_rue;
 
             btn.dataset.village = village.nom_village;
             btn.dataset.rue = rue.nom_rue;
-
-            // Colis : afficher nombre et ouvrir clavier
-            if (type === 'colis') {
-                const nbColis = Array.isArray(rue.colis) ? rue.colis.length : 0;
-                if (nbColis > 0) {
-                    btn.classList.add('selected');
-                    btn.textContent += ` (${nbColis})`;
-                }
-                btn.onclick = () => {
-                    ouvrirClavier(village.nom_village, rue.nom_rue);
-                };
-            }
-
-            // Dépôt ou BAL : toggle true/false
-            else if (type === 'depot' || type === 'bal') {
                 const flag = (type === 'depot') ? rue.depot : rue.bal;
                 if (flag) btn.classList.add('selected');
 
@@ -155,9 +169,10 @@ const makeList = (type, containerId) => {
 
                     saveData();
                 };
+                            ruesContainer.appendChild(btn);
+
             }
 
-            ruesContainer.appendChild(btn);
         });
 
         container.appendChild(villageDiv);
@@ -258,7 +273,7 @@ const ouvrirClavier = (nomVillage, nomRue) => {
         popup.innerHTML = `
             <div class="popup-content">
                 <h3 id="popupTitle">Ajouter un numéro</h3>
-                <input type="tel" inputmode="numeric" pattern="[0-9]*" id="numeroInput" placeholder="Numéro de rue" />
+                <input type="number" id="numeroInput" placeholder="Numéro de rue" />
                 <div class="popup-buttons">
                     <button id="validerNumero">Valider</button>
                     <button id="fermerPopup">Annuler</button>
