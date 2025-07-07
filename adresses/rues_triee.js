@@ -757,7 +757,7 @@ const rues = {
       "4",
       "5"
     ],
-    "ferme de puxieux": [
+    "ferme de Puxieux": [
       "1"
     ]
   }

@@ -306,8 +306,12 @@ const ouvrirPopupColis = (village, rue, numero) => {
     console.log(village, rue, numero)
 
     const popup = document.getElementById('colisPopup');
+    document.getElementById('colisPopup').classList.remove('hidden');
     const titre = document.getElementById('popupAdresseTitre');
+    document.getElementById('colisPopup').classList.remove('hidden');
     const liste = document.getElementById('popupColisListe');
+    document.getElementById('colisPopup').classList.remove('hidden');
+
 
     titre.textContent = `${numero} ${rue}, ${village}`;
     liste.innerHTML = '';

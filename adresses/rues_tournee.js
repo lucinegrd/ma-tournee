@@ -5547,7 +5547,7 @@ const tourneeData = [
         ]
       },
       {
-        "nom_rue": "ferme de puxieux",
+        "nom_rue": "ferme de Puxieux",
         "adresses": [
           {
             "numero": "1",
